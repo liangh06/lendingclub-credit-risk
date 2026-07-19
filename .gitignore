@@ -15,3 +15,11 @@ data/raw/*
 # Python runtime cruft.
 __pycache__/
 .venv/
+
+# Editor / session artifacts that tools drop into the tree (R consoles, OS file
+# managers). Not part of the project; kept out so the repo stays a clean read.
+.Rhistory
+.RData
+.Rproj.user/
+.DS_Store
+Thumbs.db
