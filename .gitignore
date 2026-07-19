@@ -1,0 +1,17 @@
+# Secrets: connection credentials live in .env, which never enters version
+# control. .env.example is the tracked template with placeholder values.
+.env
+
+# Raw data is immutable and large (~1.5 GB). It is reproduced from source, not
+# stored in git — see README for how to obtain and place it. The .gitkeep keeps
+# the empty directory tracked so the pipeline has a home to load from.
+data/raw/*
+!data/raw/.gitkeep
+
+# Power BI report binaries are large and opaque to diff/review; screenshots in
+# powerbi/screenshots/ are the reviewable artifact instead.
+*.pbix
+
+# Python runtime cruft.
+__pycache__/
+.venv/

@@ -1,0 +1,11 @@
+# Runtime dependencies for the ingestion pipeline — deliberately minimal.
+# Only what the three scripts actually import: the profiler and DDL generator use
+# the standard library alone, and the loader uses native psycopg COPY (no pandas,
+# no ORM). Pinned to the versions this pipeline was built and verified against so
+# a reviewer can reproduce the exact environment.
+#
+# psycopg[binary] ships the C driver as a wheel — no local libpq/build toolchain
+# needed, which keeps `pip install` reproducible across machines.
+
+psycopg[binary]==3.3.4
+python-dotenv==1.2.2
