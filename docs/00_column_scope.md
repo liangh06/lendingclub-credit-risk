@@ -76,11 +76,15 @@ Analytical columns are grouped by whether the information exists **at originatio
 
 - [x] Exact settled `loan_status` tokens and their counts — confirmed at GATE 3
   (see the reconciliation note above).
-- [ ] **Exclude export-footer / near-empty junk in staging.** The file ends with two
-  comma-padded `Total amount funded in policy code N` footers; these plus ~31
-  near-empty rows (empty `loan_status` and `home_ownership`) are structurally valid
-  151-field records and load as-is into `loans_raw`. Staging must exclude them via a
-  documented filter (settled `loan_status` and/or numeric `id`) — the raw table is
-  left a faithful mirror, cleaning happens downstream.
+- [ ] **Exclude export-footer / near-empty junk in staging.** The file is a
+  concatenation of export segments, each ending with a `Total amount funded in policy
+  code 1/2` footer pair — **≈32 such footer rows (16 pairs) scattered through the
+  file**, plus 1 genuinely near-empty row (together, the 33 rows with empty
+  `loan_status`/`home_ownership`). All are structurally valid 151-field records and
+  load as-is into `loans_raw`; each has a **non-numeric `id`** and unsettled (empty)
+  `loan_status`, so staging excludes them via a documented filter (numeric `id`
+  and/or settled `loan_status`). The raw table stays a faithful mirror; cleaning
+  happens downstream. _(Confirmed by post-load inspection at GATE 5 — the profiler's
+  tail-only view had shown just the final pair.)_
 - [ ] Final leakage-exclusion list against the measured column set.
 - [ ] Columns too sparse to use — decided from the emptiness census, not assumed now.
