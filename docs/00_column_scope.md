@@ -39,11 +39,16 @@ Intended mapping (exact tokens and counts confirmed at GATE 3):
 - **Bad** = `Charged Off`, `Default` (and the "Does not meet the credit policy.
   Status: Charged Off" variant).
 - **Excluded from the target** = unresolved statuses (`Current`, `In Grace Period`,
-  `Late (16-30 days)`, `Late (31-120 days)`, `Issued`) — no settled outcome, so they
-  cannot be labeled without look-ahead.
+  `Late (16-30 days)`, `Late (31-120 days)`) — no settled outcome, so they cannot be
+  labeled without look-ahead. (`Issued` was anticipated but does **not** appear in
+  this file.)
 
 The "Does not meet the credit policy" prefix is treated as an origination-channel
 marker, not a distinct outcome: the settled result is still Fully Paid / Charged Off.
+
+_Reconciled at GATE 3 (2026-07-19): the mapping holds against the measured tokens.
+Settled base = **1,348,099** loans (**1,078,739 good / 269,360 bad ≈ 20.0% bad**);
+912,569 unresolved; 33 empty. Note `Default` is tiny (40 rows)._
 
 ## Feature scope
 
@@ -69,6 +74,13 @@ Analytical columns are grouped by whether the information exists **at originatio
 
 ## Open decisions to reconcile at GATE 3 / GATE 5
 
-- [ ] Exact settled `loan_status` tokens and their counts (confirm the mapping above).
+- [x] Exact settled `loan_status` tokens and their counts — confirmed at GATE 3
+  (see the reconciliation note above).
+- [ ] **Exclude export-footer / near-empty junk in staging.** The file ends with two
+  comma-padded `Total amount funded in policy code N` footers; these plus ~31
+  near-empty rows (empty `loan_status` and `home_ownership`) are structurally valid
+  151-field records and load as-is into `loans_raw`. Staging must exclude them via a
+  documented filter (settled `loan_status` and/or numeric `id`) — the raw table is
+  left a faithful mirror, cleaning happens downstream.
 - [ ] Final leakage-exclusion list against the measured column set.
 - [ ] Columns too sparse to use — decided from the emptiness census, not assumed now.
