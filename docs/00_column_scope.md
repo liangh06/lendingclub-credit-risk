@@ -22,6 +22,26 @@ Descriptive outcome reporting (e.g. realized charge-off rate by grade or vintage
 is still in scope, but is always presented as **realized outcomes**, never as a
 predictor or risk driver.
 
+## Model scope & limitations (selection bias)
+
+The data covers **accepted loans only** — every row was already approved and funded
+under LendingClub's own acceptance policy. Any model therefore learns
+`P(default | accepted, features)`, not `P(default | applied, features)`: the rejected
+applicants, and how they would have performed, are unobserved.
+
+So this project's honest, unbiased lens is **investor / portfolio risk on booked
+loans** — "given LendingClub funded this loan, how risky is it?" — for which the
+accepted sample is the correct population. It is **not** an origination / underwriting
+scorecard ("should we accept this applicant?"): applying an accepts-trained model to
+the full through-the-door applicant pool is selection-biased. Correcting for that
+would require **reject inference** against the rejected-applications data, which has
+no outcome labels (rejected loans were never funded) — so the bias can be mitigated,
+not truly removed.
+
+Other known biases to state, not hide: maturity/survivorship (handled — keep unsettled
+loans, define the target only on settled), temporal drift across 2007–2018 (incl. the
+2008 crisis), and `int_rate`/`grade` endogeneity (LendingClub's own pricing).
+
 ## Grain
 
 One row per accepted loan.
