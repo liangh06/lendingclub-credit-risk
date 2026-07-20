@@ -16,6 +16,15 @@
 --     received is partial and `out_prncp` is still outstanding, so their net_profit
 --     understates eventual return — filter `is_settled` (from `loans`) for return
 --     analysis. This layer stays agnostic and just carries the atomic facts.
+--   * Debt-settlement and hardship blocks are deliberately NOT staged here.
+--     Recovery requires TWO stages of seasoning — the loan must default, and then a
+--     settlement/recovery process must run its course — so recent vintages cannot
+--     support LGD analysis at all (2018 loans are barely past origination). The
+--     recovered CASH is already captured by `recoveries`, which is what net_profit
+--     needs; the settlement MECHANISM fields (status, %, dates) would only serve an
+--     LGD track this snapshot can't properly support. They remain in loans_raw and
+--     can be staged later if a seasoned-vintage (pre-2016) LGD study is scoped.
+--     Hardship is excluded for volume: 832 loans, ~0.04%.
 --   * Only per-row atomic fields + net_profit live here. Aggregated ROI % is left
 --     to Power BI DAX measures so it stays filter-aware (an averaged pre-computed
 --     ratio does not respect slicers). Annualization (36- vs 60-month) is also an
