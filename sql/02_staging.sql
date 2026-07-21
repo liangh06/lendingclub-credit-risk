@@ -14,8 +14,11 @@
 --     rows). Unsettled loans are KEPT; the target is defined only on settled loans.
 --   * Column scope: 85 at-origination features + id + loan_status. Leakage
 --     (post-origination), free-text, and ~95%+ empty blocks stay in loans_raw.
---   * NULLIF(col,'') at every cast: the raw zero-NULL invariant becomes explicit,
---     documented NULLs here — no silent coercion.
+--   * NULLIF(col,'') at every cast AND on every text passthrough: the raw
+--     zero-NULL invariant becomes explicit, documented NULLs here — no silent
+--     coercion. (Text passthroughs were originally missed — caught in review when
+--     146,907 empty-string emp_length values surfaced in `loans`; the convention
+--     now applies uniformly to every column except the PK `id`.)
 --   * Counts are float-formatted in source ('5.0'), so integers cast via
 --     ::numeric::int. Dates are Mon-YYYY. term/emp_length are normalized.
 --   * "Months since last event": empty = *never happened* -> NULL, plus a
@@ -34,7 +37,7 @@ CREATE TABLE public.loans AS
 SELECT
     -- ---- keys & target ---------------------------------------------------
     "id",
-    "loan_status",
+    NULLIF("loan_status", '')                                 AS loan_status,
     ("loan_status" IN (
         'Fully Paid', 'Charged Off', 'Default',
         'Does not meet the credit policy. Status:Fully Paid',
@@ -54,24 +57,24 @@ SELECT
     NULLIF(regexp_replace("term", '[^0-9]', '', 'g'), '')::int AS term_months,
     NULLIF("int_rate", '')::numeric                           AS int_rate,
     NULLIF("installment", '')::numeric                        AS installment,
-    "grade",
-    "sub_grade",
+    NULLIF("grade", '')                                       AS grade,
+    NULLIF("sub_grade", '')                                   AS sub_grade,
 
     -- ---- borrower / application -----------------------------------------
-    "emp_length",
+    NULLIF("emp_length", '')                                  AS emp_length,
     CASE
         WHEN "emp_length" IN ('', 'n/a')     THEN NULL
         WHEN "emp_length" = '< 1 year'       THEN 0
         ELSE NULLIF(regexp_replace("emp_length", '[^0-9]', '', 'g'), '')::int
     END                                                       AS emp_length_years,
-    "home_ownership",
+    NULLIF("home_ownership", '')                              AS home_ownership,
     NULLIF("annual_inc", '')::numeric                         AS annual_inc,
-    "verification_status",
-    "application_type",
-    "purpose",
+    NULLIF("verification_status", '')                         AS verification_status,
+    NULLIF("application_type", '')                            AS application_type,
+    NULLIF("purpose", '')                                     AS purpose,
 
     -- ---- geography & dates ----------------------------------------------
-    "addr_state",
+    NULLIF("addr_state", '')                                  AS addr_state,
     to_date(NULLIF("issue_d", ''), 'Mon-YYYY')                AS issue_d,
     to_date(NULLIF("earliest_cr_line", ''), 'Mon-YYYY')       AS earliest_cr_line,
     round((to_date(NULLIF("issue_d", ''), 'Mon-YYYY')
