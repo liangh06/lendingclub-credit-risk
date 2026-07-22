@@ -15,8 +15,10 @@
 --   * Net return is reported BOTH ways and labeled: avg_return_per_loan
 --     (equal-weighted: the average loan's return) and portfolio_return
 --     (dollar-weighted: sum(profit)/sum(funded) — return per dollar invested).
---     They differ materially (grade F: 1.20% vs 0.52%) because small loans are
---     overweighted by the per-loan average. Total-period, not annualized.
+--     They differ because small loans are overweighted by the per-loan average.
+--     Total-period, not annualized. NOTE net_profit = total_pymnt - funded_amnt;
+--     total_pymnt already includes recoveries (row-level verified), so recoveries
+--     are NOT added separately (doing so previously overstated return).
 --   * No silent exclusions: rows that can't be banded (NULL / sentinel values)
 --     are shown as their own labeled bands, not filtered away. dti carries
 --     sentinels (-1, 999) and 1,711 NULLs; they are visible below.

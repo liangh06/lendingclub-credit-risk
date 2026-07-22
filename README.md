@@ -56,8 +56,9 @@ loans, with unsettled loans kept for portfolio views (and to avoid maturity bias
 ## Selected findings (settled loans)
 
 - **Risk climbs, return doesn't follow it down the grade ladder:** bad rate rises
-  6% (A) → 50% (G), but dollar-weighted net return **peaks at grade B (~6.2%) and
-  goes negative at G (−3.7%)**.
+  6% (A) → 50% (G), but dollar-weighted net return is **highest at grades A–B
+  (~5.4% / 5.3%) and turns negative from grade E down (E −1.2%, G −8.6%)** — the
+  fatter coupons on lower grades don't cover their defaults.
 - **60-month loans carry ~2× the default rate** of 36-month (32% vs 16%).
 - **FICO and DTI are cleanly monotonic** risk drivers (FICO: 31% → 9% bad).
 - **Recent vintages are under-matured** — 2018 is only 11.4% settled, so its low

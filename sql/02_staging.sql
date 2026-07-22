@@ -31,6 +31,9 @@
 -- Re-runnable: drops and rebuilds `loans`. Run after 01_create_raw.sql is loaded.
 -- ============================================================================
 
+-- The BI view (05_bi_view.sql) joins this table, so it must be dropped before the
+-- table can be rebuilt. Recreate it by running 05_bi_view.sql afterwards.
+DROP VIEW IF EXISTS public.vw_loans_bi;
 DROP TABLE IF EXISTS public.loans;
 
 CREATE TABLE public.loans AS

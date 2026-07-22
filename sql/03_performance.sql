@@ -33,6 +33,9 @@
 -- Re-runnable: drops and rebuilds loan_performance. Run after 02_staging.sql.
 -- ============================================================================
 
+-- The BI view (05_bi_view.sql) depends on this table, so it must be dropped before
+-- the table can be rebuilt. Recreate it by running 05_bi_view.sql afterwards.
+DROP VIEW IF EXISTS public.vw_loans_bi;
 DROP TABLE IF EXISTS public.loan_performance;
 
 CREATE TABLE public.loan_performance AS
@@ -65,12 +68,15 @@ SELECT
     NULLIF("last_fico_range_low", '')::numeric::int       AS last_fico_range_low,
     NULLIF("last_fico_range_high", '')::numeric::int      AS last_fico_range_high,
 
-    -- derived: total cash back and per-row net profit (recoveries added to
-    -- payments; COALESCE so a missing recoveries counts as 0, not NULL)
+    -- derived: total cash back and per-row net profit.
+    -- IMPORTANT: total_pymnt ALREADY INCLUDES recoveries. Verified row-level over
+    -- all 2,260,668 loans: total_pymnt = total_rec_prncp + total_rec_int +
+    -- total_rec_late_fee + recoveries holds to within +/-0.01 (stddev 0.0018).
+    -- So recoveries must NOT be added again (an earlier version double-counted it,
+    -- inflating portfolio return from a true 2.86% to 4.53%). recoveries stays as
+    -- its own informational column above; here total_pymnt is the full cash-in.
+    NULLIF("total_pymnt", '')::numeric                              AS total_cash_received,
     (NULLIF("total_pymnt", '')::numeric
-        + COALESCE(NULLIF("recoveries", '')::numeric, 0))            AS total_cash_received,
-    (NULLIF("total_pymnt", '')::numeric
-        + COALESCE(NULLIF("recoveries", '')::numeric, 0)
         - NULLIF("funded_amnt", '')::numeric)                       AS net_profit
 
 FROM public.loans_raw
