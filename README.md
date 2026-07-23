@@ -21,9 +21,9 @@ decision (selection bias). See [`docs/00_column_scope.md`](docs/00_column_scope.
 - [x] **Staging (SQL)** — typed `loans` (features + target) and `loan_performance`
       (economics), with a documented leakage boundary and cast rules.
 - [x] **Analysis** — reproducible finding queries (`sql/04_analysis.sql`).
-- [~] **Dashboard (Power BI)** — data model, DAX measures, and 4-page layout fully
-      specified (`docs/03_powerbi_model.md`) and the import view built
-      (`sql/05_bi_view.sql`); the `.pbix` build + screenshots are in progress.
+- [x] **Dashboard (Power BI)** — 4-page report (Overview · Risk & Return · Drivers ·
+      Geography & Vintage); model + DAX measures documented (`docs/03_powerbi_model.md`),
+      import view in `sql/05_bi_view.sql`. Screenshots below; full PDF in `powerbi/`.
 
 ## Design spine
 
@@ -64,6 +64,30 @@ loans, with unsettled loans kept for portfolio views (and to avoid maturity bias
 - **Recent vintages are under-matured** — 2018 is only 11.4% settled, so its low
   bad rate is survivorship; every vintage view carries `% settled` as a caveat.
 
+## Dashboard
+
+Four Power BI pages over the staged model. The `.pbix` is gitignored (large binary);
+these PNGs and the [full PDF report](powerbi/lendingclub-credit-risk-report.pdf) are
+the reviewable artifacts.
+
+**Risk & Return by grade** — the centerpiece: default rate climbs A→G, but
+dollar-weighted return peaks at A–B and turns *negative* from grade E.
+
+![Risk & Return](powerbi/screenshots/02_risk_return.png)
+
+**Overview** — portfolio KPIs, funding by vintage (with the maturity line), purpose mix.
+
+![Overview](powerbi/screenshots/01_overview.png)
+
+**Drivers** — FICO, DTI, home ownership, and term, each ranked by default rate.
+
+![Drivers](powerbi/screenshots/03_drivers.png)
+
+**Geography & vintage** — a 13pp state spread (regional, not credit-quality) and the
+maturity caveat on recent cohorts.
+
+![Geography & Vintage](powerbi/screenshots/04_geography_vintage.png)
+
 ## Layout
 
 ```
@@ -71,7 +95,7 @@ data/raw/     immutable source CSV (gitignored; .gitkeep tracks the dir)
 scripts/      ingestion: 00 profile → 01 generate DDL → 02 load
 sql/          01 create_raw · 02 staging · 03 performance · 04 analysis · 05 bi_view
 docs/         decision docs + generated profiling/load records + Power BI model spec
-powerbi/      report screenshots (the .pbix itself is gitignored)
+powerbi/      dashboard screenshots + PDF report (the .pbix itself is gitignored)
 ```
 
 ## Reproduce
