@@ -59,7 +59,8 @@ loans, with unsettled loans kept for portfolio views (and to avoid maturity bias
   6% (A) → 50% (G), but dollar-weighted net return is **highest at grades A–B
   (~5.4% / 5.3%) and turns negative from grade E down (E −1.2%, G −8.6%)** — the
   fatter coupons on lower grades don't cover their defaults.
-- **60-month loans carry ~2× the default rate** of 36-month (32% vs 16%).
+- **60-month loans default about twice as often** as 36-month (32% vs 16%) — but roughly
+  half that gap is grade mix: within the same grade the term effect is ~1.3×.
 - **FICO and DTI are cleanly monotonic** risk drivers (FICO: 31% → 9% bad).
 - **Recent vintages are under-matured** — 2018 is only 11.4% settled, so its low
   bad rate is survivorship; every vintage view carries `% settled` as a caveat.
